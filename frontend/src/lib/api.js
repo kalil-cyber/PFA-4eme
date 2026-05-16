@@ -1,6 +1,7 @@
 import { getToken } from './auth';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
+const REQUEST_TIMEOUT_MS = 5000;
 
 async function request(path, options = {}) {
   const headers = {
@@ -10,15 +11,33 @@ async function request(path, options = {}) {
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || res.statusText);
-  return data;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(`${API_URL}${path}`, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || res.statusText);
+    return data;
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('Délai dépassé — vérifiez que le backend tourne (port 4000).');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export const api = {
   health: () => request('/api/health'),
   getPortalConfig: () => request('/api/auth/portal-config'),
+  checkEmail: (email) =>
+    request(`/api/auth/check-email?email=${encodeURIComponent(email.trim())}`),
   me: () => request('/api/auth/me'),
   login: (email, password, accessCode) =>
     request('/api/auth/login', {
@@ -69,8 +88,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ message, history }),
     }),
-  getDiscoverWebcams: (region = 'casablanca') =>
-    request(`/api/discover/webcams?region=${region}`),
+  getDiscoverWebcams: () => request('/api/discover/webcams'),
   getDiscoverWeather: () => request('/api/discover/weather'),
   getDiscoverPois: () => request('/api/discover/pois'),
   getDiscoverEvents: () => request('/api/discover/events'),

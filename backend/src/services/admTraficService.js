@@ -30,6 +30,17 @@ function nearCasablanca(lat, lng) {
   return kmDistance(CASA.lat, CASA.lng, lat, lng) <= CASA_RADIUS_KM;
 }
 
+/** Catégorise les caméras ADM (péage, ville, autoroute…) */
+export function categorizeAdmCamera(cam) {
+  const text = `${cam.name || ''} ${cam.description || ''}`.toLowerCase();
+  if (/péage|peage|barri[eè]re|gare de péage|toll|ticket|tpda/.test(text)) return 'peage';
+  if (/casablanca|\bcasa\b|ville|urbain|rocade|corniche|maarif|médina|medina|port/.test(text)) {
+    return 'ville';
+  }
+  if (/autoroute|\ba[1-9]\b|échangeur|echangeur|viaduc|tunnel|aire/.test(text)) return 'autoroute';
+  return 'autoroute';
+}
+
 export async function getAdmWebcams({ region = 'casablanca' } = {}) {
   const cacheKey = `adm:webcams:${region}`;
   const cached = getCached(cacheKey, 10 * 60 * 1000);
@@ -38,17 +49,20 @@ export async function getAdmWebcams({ region = 'casablanca' } = {}) {
   const raw = await admFetch('/ajax/cameras');
   const list = Array.isArray(raw) ? raw : [];
 
-  let cameras = list.map((cam) => ({
-    id: `adm-${cam.id}`,
-    name: cam.nom || cam.description || `Webcam ${cam.id}`,
-    description: cam.description || '',
-    latitude: parseFloat(cam.latitude),
-    longitude: parseFloat(cam.longitude),
-    streamUrl: cam.link,
-    provider: 'ADM Autoroutes du Maroc',
-    source: 'adm',
-    live: true,
-  }));
+  let cameras = list.map((cam) => {
+    const base = {
+      id: `adm-${cam.id}`,
+      name: cam.nom || cam.description || `Webcam ${cam.id}`,
+      description: cam.description || '',
+      latitude: parseFloat(cam.latitude),
+      longitude: parseFloat(cam.longitude),
+      streamUrl: cam.link,
+      provider: 'ADM Autoroutes du Maroc',
+      source: 'adm',
+      live: true,
+    };
+    return { ...base, category: categorizeAdmCamera(base) };
+  });
 
   if (region === 'casablanca') {
     cameras = cameras.filter((c) => nearCasablanca(c.latitude, c.longitude));

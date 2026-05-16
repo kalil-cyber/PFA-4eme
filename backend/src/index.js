@@ -22,8 +22,10 @@ import {
 } from './services/trafficSimulator.js';
 import { logSystem } from './utils/logger.js';
 import { initDb, isMemoryMode, query } from './config/db.js';
+import { loadSurveillanceDataset } from './services/surveillanceDataset.js';
 
 dotenv.config();
+loadSurveillanceDataset();
 
 const app = express();
 const httpServer = createServer(app);

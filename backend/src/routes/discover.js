@@ -1,42 +1,43 @@
 import { Router } from 'express';
-import { getAdmWebcams, getAdmAlerts } from '../services/admTraficService.js';
-import { getMapcamPointsNearCasablanca } from '../services/mapcamService.js';
+import { getAdmAlerts } from '../services/admTraficService.js';
+import { getSurveillancePoints } from '../services/surveillanceDataset.js';
 import { getCasablancaWeather } from '../services/weatherService.js';
 import { getCasablancaPois } from '../services/poiService.js';
 
 const router = Router();
 
-router.get('/webcams', async (req, res) => {
+/** Webcams & surveillance — dataset local uniquement (fiable hors ligne) */
+router.get('/webcams', (req, res) => {
   try {
-    const region = req.query.region || 'casablanca';
-    const [adm, mapcam] = await Promise.all([
-      getAdmWebcams({ region }),
-      getMapcamPointsNearCasablanca().catch(() => ({ points: [], count: 0 })),
-    ]);
+    const category = req.query.category || 'all';
+    const zone = req.query.zone || 'all';
+    const data = getSurveillancePoints({ category, zone });
 
+    res.set('Cache-Control', 'public, max-age=300');
     res.json({
-      updatedAt: new Date().toISOString(),
-      region,
-      sources: ['adm', 'mapcam'],
-      cameras: adm.cameras,
-      mapcamPoints: mapcam.points || [],
-      admCount: adm.count,
-      mapcamCount: mapcam.count || 0,
+      source: 'dataset',
+      datasetFile: 'datasets/surveillance_casablanca.json',
+      updatedAt: data.updatedAt,
+      region: data.region,
+      description: data.description,
+      points: data.points,
+      webcams: data.webcams,
+      peages: data.peages,
+      feux: data.feux,
+      surveillance: data.surveillance,
+      counts: data.counts,
+      categories: data.categories,
     });
   } catch (err) {
-    res.status(502).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
-router.get('/webcams/:id/embed', async (req, res) => {
-  try {
-    const all = await getAdmWebcams({ region: 'all' });
-    const cam = all.cameras.find((c) => c.id === req.params.id);
-    if (!cam?.streamUrl) return res.status(404).json({ error: 'Webcam introuvable' });
-    res.json({ streamUrl: cam.streamUrl, name: cam.name });
-  } catch (err) {
-    res.status(502).json({ error: err.message });
-  }
+router.get('/webcams/:id', (req, res) => {
+  const data = getSurveillancePoints();
+  const point = data.points.find((p) => p.id === req.params.id);
+  if (!point) return res.status(404).json({ error: 'Point introuvable' });
+  res.json(point);
 });
 
 router.get('/weather', async (req, res) => {

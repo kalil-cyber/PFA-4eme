@@ -1,0 +1,293 @@
+{
+  "version": 1,
+  "city": "Casablanca",
+  "region": "Grand Casablanca & axes autoroutiers",
+  "updatedAt": "2026-05-16",
+  "description": "Points de surveillance, webcams de référence, péages et carrefours signalés — dataset Tariki (exploitable hors ligne).",
+  "categories": {
+    "webcam": "Webcam (flux ou vue de référence)",
+    "peage": "Péage / barrière autoroutière",
+    "feu": "Carrefour à feux tricolores",
+    "surveillance": "Zone de surveillance trafic (fixe)"
+  },
+  "points": [
+    {
+      "id": "cam-a5-bouskoura",
+      "name": "Autoroute A5 — Bouskoura (sortie Casa)",
+      "category": "webcam",
+      "zone": "autoroute",
+      "latitude": 33.4482,
+      "longitude": -7.6521,
+      "description": "Trafic entrant / sortant Casablanca par l’A5.",
+      "live": true,
+      "streamUrl": "http://admtrafic.ma/",
+      "provider": "Dataset Tariki · axe ADM"
+    },
+    {
+      "id": "cam-a5-rocade-est",
+      "name": "Rocade sud-est — liaison A5 / A3",
+      "category": "webcam",
+      "zone": "autoroute",
+      "latitude": 33.521,
+      "longitude": -7.612,
+      "description": "Jonction rocade et flux poids lourds.",
+      "live": true,
+      "streamUrl": "http://admtrafic.ma/",
+      "provider": "Dataset Tariki · axe ADM"
+    },
+    {
+      "id": "cam-corniche",
+      "name": "Corniche Ain Diab",
+      "category": "webcam",
+      "zone": "ville",
+      "latitude": 33.5885,
+      "longitude": -7.6678,
+      "description": "Front de mer, circulation corniche et accès plages.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "cam-port-casa",
+      "name": "Port de Casablanca — zone entrée",
+      "category": "webcam",
+      "zone": "ville",
+      "latitude": 33.5981,
+      "longitude": -7.6172,
+      "description": "Flux portuaire et poids lourds.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "cam-maarif",
+      "name": "Carrefour Maarif — Bd Zerktouni",
+      "category": "webcam",
+      "zone": "ville",
+      "latitude": 33.5654,
+      "longitude": -7.6321,
+      "description": "Artère commerciale, pics soirée.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "cam-gare-voyageurs",
+      "name": "Gare Casa-Voyageurs",
+      "category": "webcam",
+      "zone": "ville",
+      "latitude": 33.5895,
+      "longitude": -7.5892,
+      "description": "Hub TGV / ONCF, files taxis et bus.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "cam-medina",
+      "name": "Médina — Bab Marrakech",
+      "category": "webcam",
+      "zone": "ville",
+      "latitude": 33.5782,
+      "longitude": -7.6075,
+      "description": "Centre historique, circulation dense.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "cam-anfa",
+      "name": "Anfa — Bd de la Résistance",
+      "category": "webcam",
+      "zone": "ville",
+      "latitude": 33.5921,
+      "longitude": -7.6612,
+      "description": "Quartier résidentiel & bureaux.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "peage-casa-nord",
+      "name": "Péage Casablanca Nord (A5)",
+      "category": "peage",
+      "zone": "autoroute",
+      "latitude": 33.592,
+      "longitude": -7.548,
+      "description": "Barrière péage sortie nord vers Rabat.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "peage-bouskoura",
+      "name": "Gare de péage Bouskoura",
+      "category": "peage",
+      "zone": "autoroute",
+      "latitude": 33.455,
+      "longitude": -7.648,
+      "description": "Péage sud — entrée agglomération Casa.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "peage-berrechid",
+      "name": "Péage Berrechid (axe Casa–Marrakech)",
+      "category": "peage",
+      "zone": "autoroute",
+      "latitude": 33.265,
+      "longitude": -7.587,
+      "description": "Contrôle péage hors centre-ville, liaison A7.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "peage-nouaceur",
+      "name": "Zone industrielle Nouaceur — contrôle accès",
+      "category": "peage",
+      "zone": "autoroute",
+      "latitude": 33.378,
+      "longitude": -7.754,
+      "description": "Passage poids lourds zone logistique.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "feu-mohammed-v",
+      "name": "Place Mohammed V",
+      "category": "feu",
+      "zone": "ville",
+      "latitude": 33.5731,
+      "longitude": -7.5898,
+      "description": "Carrefour central — feux synchronisés.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "feu-twin-center",
+      "name": "Twin Center — carrefour Maarif",
+      "category": "feu",
+      "zone": "ville",
+      "latitude": 33.564,
+      "longitude": -7.631,
+      "description": "Carrefour à fort débit.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "feu-stade",
+      "name": "Stade Mohammed V — accès",
+      "category": "feu",
+      "zone": "ville",
+      "latitude": 33.5735,
+      "longitude": -7.567,
+      "description": "Feux modulés les soirs de match.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "feu-rocade-port",
+      "name": "Rocade portuaire",
+      "category": "feu",
+      "zone": "ville",
+      "latitude": 33.601,
+      "longitude": -7.625,
+      "description": "Liaison port / autoroute.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "feu-ain-sebaa",
+      "name": "Aïn Sebaâ — Route de Rabat",
+      "category": "feu",
+      "zone": "ville",
+      "latitude": 33.61,
+      "longitude": -7.548,
+      "description": "Entrée nord Casablanca.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "feu-hay-hassani",
+      "name": "Hay Hassani — Bd Chefchaouni",
+      "category": "feu",
+      "zone": "ville",
+      "latitude": 33.548,
+      "longitude": -7.678,
+      "description": "Axe ouest résidentiel.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "feu-sidi-maarouf",
+      "name": "Sidi Maarouf — tram T1",
+      "category": "feu",
+      "zone": "ville",
+      "latitude": 33.552,
+      "longitude": -7.652,
+      "description": "Croisement tram / véhicules.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "feu-californie",
+      "name": "Californie — Bd Ghandi",
+      "category": "feu",
+      "zone": "ville",
+      "latitude": 33.556,
+      "longitude": -7.701,
+      "description": "Zone commerciale ouest.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "surv-tunnel-fad",
+      "name": "Tunnel F.A.D — surveillance",
+      "category": "surveillance",
+      "zone": "ville",
+      "latitude": 33.581,
+      "longitude": -7.625,
+      "description": "Point de contrôle tunnel urbain.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "surv-marina",
+      "name": "Marina Casablanca — parking & accès",
+      "category": "surveillance",
+      "zone": "ville",
+      "latitude": 33.5982,
+      "longitude": -7.6324,
+      "description": "Surveillance flux visiteurs.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "surv-ofec",
+      "name": "Parc des expositions — OFEC",
+      "category": "surveillance",
+      "zone": "ville",
+      "latitude": 33.542,
+      "longitude": -7.612,
+      "description": "Événements & salons.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "surv-aeroport-mohammed-v",
+      "name": "Aéroport Mohammed V — dépose minute",
+      "category": "surveillance",
+      "zone": "autoroute",
+      "latitude": 33.367,
+      "longitude": -7.59,
+      "description": "Accès aéroport depuis autoroute.",
+      "live": false,
+      "provider": "Dataset Tariki"
+    },
+    {
+      "id": "cam-autoroute-rabat",
+      "name": "Autoroute Rabat — sens Casablanca",
+      "category": "webcam",
+      "zone": "autoroute",
+      "latitude": 33.62,
+      "longitude": -7.52,
+      "description": "Pic matinal Rabat → Casa.",
+      "live": true,
+      "streamUrl": "http://admtrafic.ma/",
+      "provider": "Dataset Tariki · axe ADM"
+    }
+  ]
+}

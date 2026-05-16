@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../lib/api';
+import { SURVEILLANCE_STATIC } from '../utils/surveillance';
 
 export function useDiscoverResource(fetcher, fallback) {
   const [data, setData] = useState(fallback);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!fallback);
   const [error, setError] = useState(null);
 
   const refresh = useCallback(async () => {
@@ -26,8 +27,30 @@ export function useDiscoverResource(fetcher, fallback) {
   return { data, loading, error, refresh };
 }
 
+/** Affichage instantané (dataset embarqué), sync API optionnelle en arrière-plan */
 export function useWebcams() {
-  return useDiscoverResource(() => api.getDiscoverWebcams('casablanca'), null);
+  const [data, setData] = useState(SURVEILLANCE_STATIC);
+  const [syncing, setSyncing] = useState(false);
+  const [error, setError] = useState(null);
+
+  const refresh = useCallback(async () => {
+    setSyncing(true);
+    try {
+      const fresh = await api.getDiscoverWebcams();
+      setData(fresh);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSyncing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { data, loading: false, syncing, error, refresh };
 }
 
 export function useWeather() {

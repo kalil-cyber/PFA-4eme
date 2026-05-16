@@ -13,3 +13,11 @@ Données issues de `tariki_cleaned_dataset` (trajectoires Waze, 440/jour).
 | `table_11_sunday.json` | Dimanche |
 
 Le backend génère ~13 segments routiers par jour via `tarikiDatasetLoader.js`.
+
+## Surveillance & webcams
+
+| Fichier | Contenu |
+|---------|---------|
+| `surveillance_casablanca.json` | Webcams, péages, feux et zones de surveillance (Grand Casablanca) |
+
+Consommé par `GET /api/discover/webcams` — aucune API externe requise.

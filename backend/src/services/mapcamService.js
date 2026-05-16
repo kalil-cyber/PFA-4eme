@@ -38,6 +38,11 @@ function normalizePoint(p, index) {
   const lng = parseFloat(p.ln ?? p.lng ?? p.longitude);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
 
+  const typeName = (p.type_name || p.type || '').toLowerCase();
+  let category = 'radar';
+  if (/feu|red.?light|signal|tricolore/.test(typeName)) category = 'feu';
+  else if (/toll|péage|peage/.test(typeName)) category = 'peage';
+
   return {
     id: `mapcam-${p.idm ?? p.id ?? index}`,
     name: p.type_name || p.type || p.n || `Point MapCam ${index + 1}`,
@@ -45,6 +50,7 @@ function normalizePoint(p, index) {
     latitude: lat,
     longitude: lng,
     type: p.type_name || p.type || 'camera',
+    category,
     provider: 'MapCam.info',
     source: 'mapcam',
     live: false,

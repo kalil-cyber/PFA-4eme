@@ -64,6 +64,33 @@ router.get('/portal-config', (req, res) => {
   });
 });
 
+/** Vérifie si un email est enregistré (notification connexion côté client) */
+router.get('/check-email', async (req, res) => {
+  try {
+    const email = String(req.query.email || '')
+      .trim()
+      .toLowerCase();
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'Email invalide' });
+    }
+
+    const account = await resolveAccount(email);
+    if (!account) {
+      return res.json({ exists: false, email });
+    }
+
+    res.json({
+      exists: true,
+      email: account.email,
+      name: account.name,
+      role: account.role,
+      roleLabel: account.role === 'admin' ? 'Administrateur' : 'Conducteur',
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/me', authMiddleware, (req, res) => {
   res.json({
     user: {

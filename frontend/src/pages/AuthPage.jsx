@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useTheme } from '../context/ThemeContext';
-import { Moon, Sun, Shield, UserCircle, UserCog, LogIn, UserPlus } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
+import { Moon, Sun, Shield, UserCircle, UserCog, LogIn, UserPlus, CheckCircle2, AlertCircle } from 'lucide-react';
 import TarikiLogo from '../components/brand/TarikiLogo';
 import { DashboardNavLink } from '../components/ui/ReturnToDashboard';
 import { isTokenValid, setSession, postLoginPath, getSessionRole } from '../lib/auth';
@@ -10,6 +11,15 @@ import { adminPath } from '../config/admin';
 import { DEMO_CREDENTIALS } from '../constants/demoCredentials';
 
 const isDev = import.meta.env.DEV;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isDemoEmail(email) {
+  const e = email.trim().toLowerCase();
+  return (
+    e === DEMO_CREDENTIALS.adminEmail.toLowerCase() ||
+    e === DEMO_CREDENTIALS.userEmail.toLowerCase()
+  );
+}
 
 export default function AuthPage() {
   const [mode, setMode] = useState('login');
@@ -21,8 +31,15 @@ export default function AuthPage() {
   const [accessCodeRequired, setAccessCodeRequired] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailHint, setEmailHint] = useState('');
+  const [emailHintOk, setEmailHintOk] = useState(true);
   const navigate = useNavigate();
   const { dark, toggle } = useTheme();
+  const { toast } = useToast();
+  const autoLoginRef = useRef('');
+  const emailCheckTimerRef = useRef(null);
+  const autoLoginTimerRef = useRef(null);
+  const accountRef = useRef(null);
 
   useEffect(() => {
     if (isTokenValid()) {
@@ -38,12 +55,167 @@ export default function AuthPage() {
 
   const needsAdminCode = role === 'admin' && accessCodeRequired;
 
+  const performLogin = useCallback(
+    async (loginEmail, loginPassword, loginAccessCode) => {
+      setLoading(true);
+      setError('');
+      try {
+        const { token, user } = await api.login(
+          loginEmail,
+          loginPassword,
+          loginAccessCode || undefined
+        );
+        setSession(token, user);
+        toast(`Bienvenue, ${user.name || user.email}`, 'success', 'Connexion réussie');
+        navigate(postLoginPath(user.role), { replace: true });
+      } catch (err) {
+        setError(err.message);
+        toast(err.message, 'error', 'Connexion impossible');
+        autoLoginRef.current = '';
+      } finally {
+        setLoading(false);
+      }
+    },
+    [navigate, toast]
+  );
+
+  const scheduleAutoLogin = useCallback(
+    (loginEmail, loginPassword, loginAccessCode, accountRole) => {
+      if (mode !== 'login' || loading) return;
+      if (!loginPassword || loginPassword.length < 4) return;
+      if (accountRole === 'admin' && accessCodeRequired && !loginAccessCode) return;
+
+      const key = `${loginEmail.trim().toLowerCase()}:${loginPassword}`;
+      if (autoLoginRef.current === key) return;
+
+      if (autoLoginTimerRef.current) clearTimeout(autoLoginTimerRef.current);
+      autoLoginTimerRef.current = setTimeout(() => {
+        autoLoginRef.current = key;
+        performLogin(loginEmail.trim(), loginPassword, loginAccessCode);
+      }, 600);
+    },
+    [mode, loading, accessCodeRequired, performLogin]
+  );
+
+  const lookupEmail = useCallback(
+    async (rawEmail) => {
+      const value = rawEmail.trim();
+      if (!EMAIL_RE.test(value)) {
+        setEmailHint('');
+        accountRef.current = null;
+        return;
+      }
+
+      try {
+        const info = await api.checkEmail(value);
+        accountRef.current = info;
+
+        if (info.exists) {
+          const label = info.roleLabel || (info.role === 'admin' ? 'Administrateur' : 'Conducteur');
+          setEmailHintOk(true);
+          setEmailHint(
+            `Compte ${label}${info.name ? ` (${info.name})` : ''} — connexion automatique…`
+          );
+          toast(
+            `Email reconnu : ${label}. Connexion en cours si le mot de passe est correct.`,
+            'info',
+            'Connexion automatique'
+          );
+
+          if (info.role === 'admin' && !accessCode && isDemoEmail(value)) {
+            setAccessCode(DEMO_CREDENTIALS.adminAccessCode);
+          }
+          if (isDemoEmail(value) && !password) {
+            setPassword(DEMO_CREDENTIALS.password);
+          }
+
+          const code =
+            info.role === 'admin'
+              ? accessCode || (isDemoEmail(value) ? DEMO_CREDENTIALS.adminAccessCode : '')
+              : accessCode;
+
+          scheduleAutoLogin(value, password || (isDemoEmail(value) ? DEMO_CREDENTIALS.password : ''), code, info.role);
+        } else {
+          setEmailHintOk(false);
+          setEmailHint('Aucun compte avec cet email — passez à Inscription ou vérifiez l’adresse.');
+          toast(
+            'Cet email n’est pas enregistré. Créez un compte ou corrigez l’adresse.',
+            'warning',
+            'Email inconnu'
+          );
+          autoLoginRef.current = '';
+        }
+      } catch {
+        setEmailHint('');
+        accountRef.current = null;
+      }
+    },
+    [accessCode, password, scheduleAutoLogin, toast]
+  );
+
+  const handleEmailChange = (value) => {
+    setEmail(value);
+    autoLoginRef.current = '';
+
+    if (emailCheckTimerRef.current) clearTimeout(emailCheckTimerRef.current);
+    if (!EMAIL_RE.test(value.trim())) {
+      setEmailHint('');
+      accountRef.current = null;
+      return;
+    }
+
+    emailCheckTimerRef.current = setTimeout(() => lookupEmail(value), 450);
+  };
+
+  const handlePasswordChange = (value) => {
+    setPassword(value);
+    autoLoginRef.current = '';
+    const account = accountRef.current;
+    if (!account?.exists || mode !== 'login') return;
+
+    const code =
+      account.role === 'admin'
+        ? accessCode || (isDemoEmail(email) ? DEMO_CREDENTIALS.adminAccessCode : '')
+        : accessCode;
+
+    scheduleAutoLogin(email, value, code, account.role);
+  };
+
+  const handleAccessCodeChange = (value) => {
+    setAccessCode(value);
+    autoLoginRef.current = '';
+    const account = accountRef.current;
+    if (!account?.exists || account.role !== 'admin' || mode !== 'login') return;
+    scheduleAutoLogin(email, password, value, 'admin');
+  };
+
+  useEffect(
+    () => () => {
+      if (emailCheckTimerRef.current) clearTimeout(emailCheckTimerRef.current);
+      if (autoLoginTimerRef.current) clearTimeout(autoLoginTimerRef.current);
+    },
+    []
+  );
+
+  useEffect(() => {
+    autoLoginRef.current = '';
+    setEmailHint('');
+    accountRef.current = null;
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode === 'login' && EMAIL_RE.test(email.trim())) {
+      lookupEmail(email);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-vérif après config portail
+  }, [accessCodeRequired, mode]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      if (mode === 'register') {
+    if (mode === 'register') {
+      setLoading(true);
+      setError('');
+      try {
         const { token, user } = await api.register({
           name,
           email,
@@ -52,17 +224,16 @@ export default function AuthPage() {
           accessCode: accessCode || undefined,
         });
         setSession(token, user);
+        toast('Compte créé avec succès', 'success', 'Inscription');
         navigate(postLoginPath(user.role), { replace: true });
-      } else {
-        const { token, user } = await api.login(email, password, accessCode || undefined);
-        setSession(token, user);
-        navigate(postLoginPath(user.role), { replace: true });
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      return;
     }
+    await performLogin(email, password, accessCode);
   };
 
   return (
@@ -134,23 +305,41 @@ export default function AuthPage() {
           )}
 
           <label className="block">
-              <span className="text-base font-medium text-slate-800 dark:text-slate-200">Email</span>
+            <span className="text-base font-medium text-slate-800 dark:text-slate-200">Email</span>
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => handleEmailChange(e.target.value)}
+              onBlur={() => lookupEmail(email)}
               required
               autoComplete="username"
               className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base text-slate-900 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-50 focus:ring-2 focus:ring-tariki-500 mt-1"
             />
+            {emailHint && (
+              <p
+                role="status"
+                className={`mt-2 flex items-center gap-1.5 text-sm ${
+                  emailHintOk
+                    ? 'text-emerald-700 dark:text-emerald-300'
+                    : 'text-amber-700 dark:text-amber-300'
+                }`}
+              >
+                {emailHintOk ? (
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                ) : (
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                )}
+                {emailHint}
+              </p>
+            )}
           </label>
 
           <label className="block">
-              <span className="text-base font-medium text-slate-800 dark:text-slate-200">Mot de passe</span>
+            <span className="text-base font-medium text-slate-800 dark:text-slate-200">Mot de passe</span>
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => handlePasswordChange(e.target.value)}
               required
               minLength={4}
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
@@ -201,7 +390,7 @@ export default function AuthPage() {
               <input
                 type="password"
                 value={accessCode}
-                onChange={(e) => setAccessCode(e.target.value)}
+                onChange={(e) => handleAccessCodeChange(e.target.value)}
                 autoComplete="off"
                 required={needsAdminCode}
                 placeholder="Requis pour les comptes admin"
@@ -220,11 +409,7 @@ export default function AuthPage() {
             disabled={loading}
             className="rounded-lg bg-tariki-600 text-white font-semibold hover:bg-tariki-700 w-full py-3 disabled:opacity-50"
           >
-            {loading
-              ? '…'
-              : mode === 'login'
-                ? 'Se connecter'
-                : 'Créer mon compte'}
+            {loading ? '…' : mode === 'login' ? 'Se connecter' : 'Créer mon compte'}
           </button>
         </form>
 
@@ -241,10 +426,6 @@ export default function AuthPage() {
             </li>
             <li>Code admin : {DEMO_CREDENTIALS.adminAccessCode}</li>
           </ul>
-          <p className="mt-2 text-[10px] text-slate-500 font-sans">
-            Dans <code className="text-tariki-700">backend/.env</code> :{' '}
-            <code>ADMIN_ACCESS_CODE={DEMO_CREDENTIALS.adminAccessCode}</code>
-          </p>
         </div>
 
         <div className="mt-5 flex flex-col items-center gap-3">
