@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Tariki: backend",
+      "type": "npm",
+      "script": "dev:backend",
+      "path": ".",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "tariki" },
+      "isBackground": true
+    },
+    {
+      "label": "Tariki: frontend",
+      "type": "npm",
+      "script": "dev:frontend",
+      "path": ".",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "tariki" },
+      "isBackground": true
+    },
+    {
+      "label": "Tariki: tout lancer (backend + frontend)",
+      "dependsOn": ["Tariki: backend", "Tariki: frontend"],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "Tariki: install dépendances",
+      "type": "npm",
+      "script": "install:all",
+      "path": ".",
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+# Déploiement gratuit backend — https://render.com
+# Connecter le dépôt https://github.com/kalil-cyber/PFA-4eme puis « New Blueprint »
+services:
+  - type: web
+    name: tariki-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: USE_MEMORY
+        value: "true"
+      - key: TARIKI_DEFAULT_DAY
+        value: monday
+      - key: ADMIN_ACCESS_CODE
+        value: "0000"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        sync: false
+      - key: SIMULATION_INTERVAL_MS
+        value: "3000"
