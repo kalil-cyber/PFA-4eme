@@ -1,5 +1,7 @@
 # Déploiement gratuit Tariki — un lien pour tous (Windows, Mac, mobile)
 
+> **Sans carte Visa** : voir **[DEPLOY-SANS-CARTE.md](./DEPLOY-SANS-CARTE.md)** — Render et Vercel Hobby ne demandent pas de carte bancaire.
+
 Tariki est une **application web** : un seul lien HTTPS fonctionne sur **tous les navigateurs** — PC, Mac, iPhone, Android. Aucune installation.
 
 ## Option recommandée — UN seul service Render (app + API)
