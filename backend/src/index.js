@@ -1,8 +1,17 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
+import fs from 'fs';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PUBLIC_DIR = path.join(__dirname, '../public');
+const SERVE_FRONTEND =
+  process.env.SERVE_FRONTEND === 'true' ||
+  (process.env.NODE_ENV === 'production' && fs.existsSync(path.join(PUBLIC_DIR, 'index.html')));
 
 import authRoutes from './routes/auth.js';
 import incidentRoutes from './routes/incidents.js';
@@ -21,6 +30,7 @@ import {
   getTrafficSnapshot,
 } from './services/trafficSimulator.js';
 import { logSystem } from './utils/logger.js';
+import { getCorsOptions, corsOriginCallback } from './utils/corsOrigins.js';
 import { initDb, isMemoryMode, query } from './config/db.js';
 import { loadSurveillanceDataset } from './services/surveillanceDataset.js';
 
@@ -31,14 +41,14 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: corsOriginCallback,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   },
 });
 
 app.set('io', io);
 
-app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:5173' }));
+app.use(cors(getCorsOptions()));
 app.use(express.json({ limit: '1mb' }));
 
 app.get('/api/health', async (req, res) => {
@@ -80,6 +90,14 @@ app.use('/api', (req, res) => {
   res.status(404).json({ error: `Route API introuvable: ${req.method} ${req.originalUrl}` });
 });
 
+if (SERVE_FRONTEND) {
+  app.use(express.static(PUBLIC_DIR, { maxAge: '1h', index: false }));
+  app.get(/^\/(?!api\/).*/, (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+  });
+}
+
 app.use((err, req, res, next) => {
   console.error('[API]', err.message);
   logSystem('error', 'api', err.message).catch(() => {});
@@ -111,9 +129,12 @@ const PORT = process.env.PORT || 4000;
 async function start() {
   await initDb();
   httpServer.listen(PORT, async () => {
-    console.log(`\n🚦 Tariki API — Casablanca — http://localhost:${PORT}`);
+    const base = `http://localhost:${PORT}`;
+    console.log(`\n🚦 Tariki — Casablanca — ${base}`);
     console.log(`   Mode: ${isMemoryMode() ? 'mémoire (USE_MEMORY)' : 'PostgreSQL'}`);
-    console.log(`   Santé: http://localhost:${PORT}/api/health\n`);
+    console.log(`   Santé: ${base}/api/health`);
+    if (SERVE_FRONTEND) console.log(`   App web: ${base}/`);
+    console.log('');
     await logSystem('info', 'server', `Serveur démarré sur le port ${PORT}`);
     await refreshPredictions();
     await logSystem('info', 'prediction', 'Module Traffic Prediction initialisé');

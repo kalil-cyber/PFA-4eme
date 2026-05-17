@@ -2,7 +2,13 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
 const SocketContext = createContext(null);
-const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:4000';
+function resolveWsUrl() {
+  if (import.meta.env.VITE_WS_URL) return import.meta.env.VITE_WS_URL;
+  if (import.meta.env.PROD && typeof window !== 'undefined') return window.location.origin;
+  return 'http://localhost:4000';
+}
+
+const WS_URL = resolveWsUrl();
 
 export function SocketProvider({ children }) {
   const [socket, setSocket] = useState(null);
@@ -11,7 +17,11 @@ export function SocketProvider({ children }) {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    const s = io(WS_URL, { transports: ['websocket', 'polling'] });
+    const s = io(WS_URL, {
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: 8,
+      timeout: 20000,
+    });
 
     s.on('connect', () => setConnected(true));
     s.on('disconnect', () => setConnected(false));

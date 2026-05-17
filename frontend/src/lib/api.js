@@ -1,7 +1,7 @@
 import { getToken } from './auth';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
-const REQUEST_TIMEOUT_MS = 5000;
+const REQUEST_TIMEOUT_MS = import.meta.env.PROD ? 25000 : 5000;
 
 async function request(path, options = {}) {
   const headers = {
@@ -25,7 +25,11 @@ async function request(path, options = {}) {
     return data;
   } catch (err) {
     if (err.name === 'AbortError') {
-      throw new Error('Délai dépassé — vérifiez que le backend tourne (port 4000).');
+      throw new Error(
+        import.meta.env.PROD
+          ? 'Le serveur met du temps à répondre (démarrage gratuit ~1 min). Réessayez.'
+          : 'Délai dépassé — vérifiez que le backend tourne (port 4000).'
+      );
     }
     throw err;
   } finally {

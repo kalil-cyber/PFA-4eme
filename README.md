@@ -155,6 +155,12 @@ OPENAI_MODEL=gpt-4o-mini
 - Détection caméra (YOLO / OpenCV)
 - Google Maps Traffic API
 
+## Déploiement gratuit — un lien pour tous (Windows, Mac, mobile)
+
+Guide détaillé : **[DEPLOIEMENT-GRATUIT.md](./DEPLOIEMENT-GRATUIT.md)**
+
+Résumé : **Vercel** (site public HTTPS) + **Render** (API). Les utilisateurs ouvrent un seul lien dans le navigateur — aucune app à installer.
+
 ## Déploiement gratuit (GitHub `kalil-cyber/PFA-4eme`)
 
 ### 1. Pousser sur GitHub
