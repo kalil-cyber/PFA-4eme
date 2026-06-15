@@ -13,5 +13,7 @@ services:
         value: production
       - key: SERVE_FRONTEND
         value: "true"
+      - key: ADMIN_ACCESS_CODE
+        value: "0000"
       - key: CORS_ALLOW_VERCEL
         value: "true"

@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  ArrowLeft,
   CheckCircle2,
+  Gift,
+  Lock,
   Minus,
+  Percent,
   Plus,
+  Save,
   Search,
   ShieldCheck,
   ShoppingCart,
@@ -66,17 +71,35 @@ const fallbackProducts = [
   },
 ];
 
+const defaultPromotions = {
+  discountPercent: 20,
+  freeShakerEnabled: true,
+  freeShakerThreshold: 500,
+  headline: 'Offre lancement: -20% sur la boutique',
+  shakerLabel: 'Shaker Kalil Protein offert',
+};
+
 function formatPrice(value) {
   return currencyFormatter.format(value);
 }
 
-function ProductCard({ product, onAdd }) {
+function ProductCard({ product, onAdd, promotions }) {
+  const discountPercent = product.discountPercent ?? promotions.discountPercent ?? 0;
+  const basePrice = product.basePrice || product.oldPrice || product.price;
+
   return (
     <article className="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-2xl">
       <div className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-900 p-6 text-white">
-        <span className="rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-slate-950">
-          {product.badge}
-        </span>
+        <div className="flex items-center justify-between gap-3">
+          <span className="rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-slate-950">
+            {product.badge}
+          </span>
+          {discountPercent > 0 && (
+            <span className="rounded-full bg-red-500 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-white">
+              -{discountPercent}%
+            </span>
+          )}
+        </div>
         <div className="mt-8 flex h-36 items-center justify-center rounded-3xl border border-white/10 bg-white/10 text-4xl font-black tracking-tight">
           {product.image}
         </div>
@@ -114,7 +137,11 @@ function ProductCard({ product, onAdd }) {
           </div>
           <div className="text-right">
             <p className="text-2xl font-black text-slate-950">{formatPrice(product.price)}</p>
-            <p className="text-sm text-slate-400 line-through">{formatPrice(product.oldPrice)}</p>
+            {discountPercent > 0 ? (
+              <p className="text-sm text-red-500 line-through">{formatPrice(basePrice)}</p>
+            ) : (
+              <p className="text-sm text-slate-400 line-through">{formatPrice(product.oldPrice)}</p>
+            )}
           </div>
         </div>
 
@@ -159,7 +186,194 @@ function CartLine({ item, onIncrement, onDecrement, onRemove }) {
   );
 }
 
+function AdminPanel() {
+  const [adminCode, setAdminCode] = useState('');
+  const [settings, setSettings] = useState(defaultPromotions);
+  const [status, setStatus] = useState(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  function loadPromotions(code) {
+    setStatus({ type: 'loading', message: 'Chargement des promotions...' });
+    fetch(`${API_URL}/api/admin/promotions`, {
+      headers: { 'x-admin-code': code },
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Code admin invalide');
+        return data;
+      })
+      .then((data) => {
+        setSettings(data.promotions || defaultPromotions);
+        setIsUnlocked(true);
+        setStatus({ type: 'success', message: 'Admin ouvert. Tu peux modifier les offres.' });
+      })
+      .catch((error) => setStatus({ type: 'error', message: error.message }));
+  }
+
+  function submitCode(event) {
+    event.preventDefault();
+    loadPromotions(adminCode);
+  }
+
+  function savePromotions(event) {
+    event.preventDefault();
+    setStatus({ type: 'loading', message: 'Sauvegarde en cours...' });
+    fetch(`${API_URL}/api/admin/promotions`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-code': adminCode,
+      },
+      body: JSON.stringify(settings),
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Sauvegarde impossible');
+        return data;
+      })
+      .then((data) => {
+        setSettings(data.promotions);
+        setStatus({ type: 'success', message: 'Promotions sauvegardees. La boutique est mise a jour.' });
+      })
+      .catch((error) => setStatus({ type: 'error', message: error.message }));
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-950 px-4 py-10 text-white sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl">
+        <a href="/" className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-white hover:bg-white/20">
+          <ArrowLeft className="h-4 w-4" />
+          Retour boutique
+        </a>
+
+        <div className="mt-8 rounded-[2rem] border border-white/10 bg-white/10 p-6 shadow-2xl backdrop-blur">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.25em] text-emerald-300">Admin Kalil Protein</p>
+              <h1 className="mt-2 text-4xl font-black">Promotions boutique</h1>
+              <p className="mt-3 max-w-2xl text-slate-300">
+                Les clients n ont pas besoin de compte. Ici, seul l admin change les reductions et le shaker offert.
+              </p>
+            </div>
+            <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-400 text-slate-950">
+              <Lock className="h-8 w-8" />
+            </div>
+          </div>
+
+          {!isUnlocked ? (
+            <form onSubmit={submitCode} className="mt-8 grid gap-4 rounded-3xl bg-slate-950/60 p-5">
+              <label className="text-sm font-bold text-slate-200">Code admin</label>
+              <input
+                type="password"
+                value={adminCode}
+                onChange={(event) => setAdminCode(event.target.value)}
+                placeholder="Ex: 0000"
+                className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-slate-950 outline-none focus:border-emerald-400"
+              />
+              <button type="submit" className="rounded-2xl bg-emerald-400 px-6 py-4 font-black text-slate-950 hover:bg-emerald-300">
+                Entrer dans admin
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={savePromotions} className="mt-8 grid gap-5 rounded-3xl bg-slate-950/60 p-5">
+              <div className="grid gap-5 md:grid-cols-2">
+                <label className="grid gap-2">
+                  <span className="text-sm font-bold text-slate-200">Reduction globale (%)</span>
+                  <input
+                    type="number"
+                    min="0"
+                    max="80"
+                    value={settings.discountPercent}
+                    onChange={(event) => setSettings({ ...settings, discountPercent: event.target.value })}
+                    className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-slate-950 outline-none focus:border-emerald-400"
+                  />
+                </label>
+                <label className="grid gap-2">
+                  <span className="text-sm font-bold text-slate-200">Seuil shaker offert (MAD)</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={settings.freeShakerThreshold}
+                    onChange={(event) => setSettings({ ...settings, freeShakerThreshold: event.target.value })}
+                    className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-slate-950 outline-none focus:border-emerald-400"
+                  />
+                </label>
+              </div>
+
+              <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <input
+                  type="checkbox"
+                  checked={settings.freeShakerEnabled}
+                  onChange={(event) => setSettings({ ...settings, freeShakerEnabled: event.target.checked })}
+                  className="h-5 w-5 accent-emerald-400"
+                />
+                <span className="font-bold">Activer le shaker offert</span>
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-bold text-slate-200">Texte du bandeau promo</span>
+                <input
+                  value={settings.headline}
+                  onChange={(event) => setSettings({ ...settings, headline: event.target.value })}
+                  className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-slate-950 outline-none focus:border-emerald-400"
+                />
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-bold text-slate-200">Nom du cadeau</span>
+                <input
+                  value={settings.shakerLabel}
+                  onChange={(event) => setSettings({ ...settings, shakerLabel: event.target.value })}
+                  className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-slate-950 outline-none focus:border-emerald-400"
+                />
+              </label>
+
+              <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-6 py-4 font-black text-slate-950 hover:bg-emerald-300">
+                <Save className="h-5 w-5" />
+                Sauvegarder les promotions
+              </button>
+            </form>
+          )}
+
+          {status && (
+            <div
+              className={`mt-5 rounded-2xl p-4 font-semibold ${
+                status.type === 'error'
+                  ? 'bg-red-500/15 text-red-200'
+                  : status.type === 'success'
+                    ? 'bg-emerald-500/15 text-emerald-200'
+                    : 'bg-white/10 text-slate-200'
+              }`}
+            >
+              {status.message}
+            </div>
+          )}
+
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <div className="rounded-3xl bg-white p-5 text-slate-950">
+              <Percent className="h-7 w-7 text-emerald-600" />
+              <p className="mt-4 text-3xl font-black">-{settings.discountPercent}%</p>
+              <p className="text-sm text-slate-600">Reduction active</p>
+            </div>
+            <div className="rounded-3xl bg-white p-5 text-slate-950">
+              <Gift className="h-7 w-7 text-emerald-600" />
+              <p className="mt-4 text-3xl font-black">{settings.freeShakerEnabled ? 'ON' : 'OFF'}</p>
+              <p className="text-sm text-slate-600">Shaker offert</p>
+            </div>
+            <div className="rounded-3xl bg-white p-5 text-slate-950">
+              <ShoppingCart className="h-7 w-7 text-emerald-600" />
+              <p className="mt-4 text-3xl font-black">{formatPrice(Number(settings.freeShakerThreshold) || 0)}</p>
+              <p className="text-sm text-slate-600">Seuil cadeau</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
+  const isAdminPage = window.location.pathname === '/admin';
   const [products, setProducts] = useState(fallbackProducts);
   const [categories, setCategories] = useState(['Tous', 'Proteines', 'Performance', 'Accessoires']);
   const [activeCategory, setActiveCategory] = useState('Tous');
@@ -168,6 +382,7 @@ export default function App() {
   const [customer, setCustomer] = useState({ name: '', phone: '', city: '', address: '' });
   const [orderStatus, setOrderStatus] = useState(null);
   const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [promotions, setPromotions] = useState(defaultPromotions);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -200,8 +415,26 @@ export default function App() {
       });
   }, [activeCategory, search]);
 
+  useEffect(() => {
+    fetch(`${API_URL}/api/promotions`)
+      .then((response) => {
+        if (!response.ok) throw new Error('Promotions indisponibles');
+        return response.json();
+      })
+      .then((data) => setPromotions(data.promotions || defaultPromotions))
+      .catch(() => setPromotions(defaultPromotions));
+  }, []);
+
   const subtotal = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.quantity, 0), [cart]);
+  const baseSubtotal = useMemo(
+    () => cart.reduce((sum, item) => sum + (item.basePrice || item.price) * item.quantity, 0),
+    [cart]
+  );
+  const discountAmount = Math.max(0, baseSubtotal - subtotal);
   const shipping = subtotal === 0 || subtotal >= 500 ? 0 : 35;
+  const freeShakerIncluded = Boolean(
+    promotions.freeShakerEnabled && subtotal >= Number(promotions.freeShakerThreshold || 0)
+  );
   const total = subtotal + shipping;
 
   function addToCart(product) {
@@ -213,7 +446,16 @@ export default function App() {
           item.id === product.id ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) } : item
         );
       }
-      return [...current, { id: product.id, name: product.name, price: product.price, quantity: 1 }];
+      return [
+        ...current,
+        {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          basePrice: product.basePrice || product.oldPrice || product.price,
+          quantity: 1,
+        },
+      ];
     });
   }
 
@@ -270,6 +512,10 @@ export default function App() {
       .catch((error) => setOrderStatus({ type: 'error', message: error.message }));
   }
 
+  if (isAdminPage) {
+    return <AdminPanel />;
+  }
+
   return (
     <div className="min-h-screen bg-[#f7f3ea] text-slate-950">
       <header className="sticky top-0 z-40 border-b border-white/30 bg-[#f7f3ea]/90 backdrop-blur-xl">
@@ -287,6 +533,7 @@ export default function App() {
             <a href="#produits" className="hover:text-emerald-700">Produits</a>
             <a href="#avantages" className="hover:text-emerald-700">Avantages</a>
             <a href="#commande" className="hover:text-emerald-700">Commande</a>
+            <a href="/admin" className="hover:text-emerald-700">Admin</a>
           </nav>
           <a href="#panier" className="flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-bold text-white">
             <ShoppingCart className="h-4 w-4" />
@@ -303,6 +550,15 @@ export default function App() {
               <p className="w-fit rounded-full bg-white px-4 py-2 text-sm font-bold uppercase tracking-[0.25em] text-emerald-700 shadow-sm">
                 Proteines - performance - accessoires
               </p>
+              <div className="mt-5 flex w-fit flex-wrap items-center gap-3 rounded-3xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-emerald-900 shadow-sm">
+                <Percent className="h-5 w-5" />
+                <span className="font-black">{promotions.headline}</span>
+                {promotions.freeShakerEnabled && (
+                  <span className="rounded-full bg-slate-950 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
+                    Shaker offert des {formatPrice(Number(promotions.freeShakerThreshold) || 0)}
+                  </span>
+                )}
+              </div>
               <h1 className="mt-8 max-w-4xl text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
                 La boutique nutrition qui pousse tes objectifs plus loin.
               </h1>
@@ -327,10 +583,10 @@ export default function App() {
                   KP
                 </div>
                 <div className="mt-8 grid grid-cols-3 gap-3">
-                  {['Whey', 'Creatine', 'BCAA'].map((label) => (
+                  {['Whey', 'Creatine', 'Shaker offert'].map((label) => (
                     <div key={label} className="rounded-2xl bg-white/10 p-4 text-center">
                       <p className="font-black">{label}</p>
-                      <p className="text-xs text-slate-300">Disponible</p>
+                      <p className="text-xs text-slate-300">{label === 'Shaker offert' ? 'Promo admin' : 'Disponible'}</p>
                     </div>
                   ))}
                 </div>
@@ -343,7 +599,7 @@ export default function App() {
           {[
             { icon: Truck, title: 'Livraison rapide', text: 'Expedition a Casablanca et partout au Maroc.' },
             { icon: ShieldCheck, title: 'Produits verifies', text: 'Selection orientee qualite, gout et performance.' },
-            { icon: CheckCircle2, title: 'Commande simple', text: 'Panier, formulaire, confirmation et suivi client.' },
+            { icon: Gift, title: 'Shaker offert', text: `Cadeau active des ${formatPrice(Number(promotions.freeShakerThreshold) || 0)} si l admin le laisse actif.` },
           ].map((feature) => (
             <div key={feature.title} className="rounded-3xl bg-white p-6 shadow-sm">
               <feature.icon className="h-8 w-8 text-emerald-600" />
@@ -391,7 +647,7 @@ export default function App() {
 
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} onAdd={addToCart} />
+              <ProductCard key={product.id} product={product} onAdd={addToCart} promotions={promotions} />
             ))}
           </div>
         </section>
@@ -426,10 +682,29 @@ export default function App() {
             </div>
 
             <div className="mt-6 space-y-3 rounded-3xl bg-white/10 p-5">
+              {discountAmount > 0 && (
+                <>
+                  <div className="flex justify-between text-slate-300">
+                    <span>Avant reduction</span>
+                    <span className="line-through">{formatPrice(baseSubtotal)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-emerald-300">
+                    <span>Reduction -{promotions.discountPercent}%</span>
+                    <span>-{formatPrice(discountAmount)}</span>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between text-slate-200">
                 <span>Sous-total</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
+              {promotions.freeShakerEnabled && (
+                <div className={`rounded-2xl p-3 text-sm font-bold ${freeShakerIncluded ? 'bg-emerald-400 text-slate-950' : 'bg-white/10 text-slate-200'}`}>
+                  {freeShakerIncluded
+                    ? `${promotions.shakerLabel} ajoute gratuitement`
+                    : `Encore ${formatPrice(Math.max(0, Number(promotions.freeShakerThreshold || 0) - subtotal))} pour le shaker offert`}
+                </div>
+              )}
               <div className="flex justify-between text-slate-200">
                 <span>Livraison</span>
                 <span>{shipping === 0 ? 'Gratuite' : formatPrice(shipping)}</span>
@@ -440,6 +715,7 @@ export default function App() {
                   <span>{formatPrice(total)}</span>
                 </div>
                 <p className="mt-2 text-sm text-emerald-300">Livraison gratuite a partir de 500 MAD.</p>
+                <p className="mt-1 text-sm text-slate-300">Aucune inscription client necessaire.</p>
               </div>
             </div>
           </aside>
@@ -447,6 +723,9 @@ export default function App() {
           <div className="rounded-[2rem] bg-white p-6 shadow-sm">
             <p className="font-bold uppercase tracking-[0.25em] text-emerald-700">Informations client</p>
             <h2 className="mt-3 text-3xl font-black">Finaliser la commande</h2>
+            <p className="mt-2 text-sm font-semibold text-slate-600">
+              Pas de compte a creer : nom, telephone, ville, puis validation.
+            </p>
             <form onSubmit={submitOrder} className="mt-6 grid gap-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <input

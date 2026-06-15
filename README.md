@@ -8,6 +8,7 @@ Le projet contient :
 - un catalogue produits avec filtres et recherche ;
 - un panier local ;
 - un formulaire de commande ;
+- une page admin pour changer les reductions et le shaker offert ;
 - une API Express pour les produits, commandes et inscriptions newsletter ;
 - un deploiement possible en un seul service Render ou en frontend Vercel + API Render.
 
@@ -61,8 +62,23 @@ Application : http://localhost:5173
 - ajout au panier ;
 - modification des quantites ;
 - calcul du sous-total, livraison et total ;
+- affichage des reductions ;
+- shaker offert selon le seuil configure par admin ;
 - formulaire de commande ;
 - inscription newsletter.
+
+Les clients n ont pas besoin d inscription ni de compte.
+
+### Cote admin
+
+- URL : http://localhost:5173/admin
+- Code par defaut : `0000`
+- Reglages modifiables :
+  - pourcentage de reduction globale ;
+  - activation/desactivation du shaker offert ;
+  - seuil minimum du shaker offert ;
+  - texte du bandeau promo ;
+  - nom du cadeau.
 
 ### Cote API
 
@@ -71,9 +87,11 @@ Application : http://localhost:5173
 | GET | `/api/health` | Etat de l API |
 | GET | `/api/products` | Liste des produits |
 | GET | `/api/products/:id` | Detail d un produit |
+| GET | `/api/promotions` | Promotions visibles sur la boutique |
 | POST | `/api/orders` | Creation d une commande |
-| GET | `/api/orders` | Liste des commandes en memoire |
+| GET | `/api/orders` | Liste des commandes en memoire, admin seulement |
 | POST | `/api/newsletter` | Inscription newsletter |
+| GET/PUT | `/api/admin/promotions` | Lecture/modification des promotions, admin seulement |
 
 ## Variables d environnement
 
@@ -82,6 +100,7 @@ Application : http://localhost:5173
 ```env
 PORT=4000
 CORS_ORIGIN=http://localhost:5173
+ADMIN_ACCESS_CODE=0000
 ```
 
 ### Frontend

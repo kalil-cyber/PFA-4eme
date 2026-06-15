@@ -24,6 +24,21 @@ async function run() {
   const products = await req('GET', '/api/products');
   console.log(products.ok ? 'OK' : 'KO', 'GET /api/products', `(${products.data?.products?.length ?? 0} produits)`);
 
+  const promotions = await req('GET', '/api/promotions');
+  console.log(promotions.ok ? 'OK' : 'KO', 'GET /api/promotions', `${promotions.data?.promotions?.discountPercent ?? 0}%`);
+
+  const adminPromotions = await fetch(`${BASE}/api/admin/promotions`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'x-admin-code': '0000' },
+    body: JSON.stringify({
+      discountPercent: 15,
+      freeShakerEnabled: true,
+      freeShakerThreshold: 500,
+      headline: 'Smoke test promo',
+    }),
+  }).then(async (res) => ({ ok: res.ok, status: res.status, data: await res.json().catch(() => ({})) }));
+  console.log(adminPromotions.ok ? 'OK' : 'KO', 'PUT /api/admin/promotions');
+
   const newsletter = await req('POST', '/api/newsletter', { email: 'client@example.com' });
   console.log(newsletter.ok ? 'OK' : 'KO', 'POST /api/newsletter');
 
@@ -38,7 +53,7 @@ async function run() {
   });
   console.log(order.ok ? 'OK' : 'KO', 'POST /api/orders', order.data?.order?.reference || '');
 
-  const failed = [health, products, newsletter, order].filter((r) => !r.ok);
+  const failed = [health, products, promotions, adminPromotions, newsletter, order].filter((r) => !r.ok);
   console.log(failed.length ? `\n${failed.length} echec(s)` : '\nTous les tests OK');
   process.exit(failed.length ? 1 : 0);
 }
