@@ -2,32 +2,32 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Tariki: backend",
+      "label": "Kalil Nutrition: backend",
       "type": "npm",
       "script": "dev:backend",
       "path": ".",
       "problemMatcher": [],
-      "presentation": { "reveal": "always", "panel": "dedicated", "group": "tariki" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "kalil-nutrition" },
       "isBackground": true
     },
     {
-      "label": "Tariki: frontend",
+      "label": "Kalil Nutrition: frontend",
       "type": "npm",
       "script": "dev:frontend",
       "path": ".",
       "problemMatcher": [],
-      "presentation": { "reveal": "always", "panel": "dedicated", "group": "tariki" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "kalil-nutrition" },
       "isBackground": true
     },
     {
-      "label": "Tariki: tout lancer (backend + frontend)",
-      "dependsOn": ["Tariki: backend", "Tariki: frontend"],
+      "label": "Kalil Nutrition: tout lancer (backend + frontend)",
+      "dependsOn": ["Kalil Nutrition: backend", "Kalil Nutrition: frontend"],
       "dependsOrder": "parallel",
       "problemMatcher": [],
       "group": { "kind": "build", "isDefault": true }
     },
     {
-      "label": "Tariki: install dépendances",
+      "label": "Kalil Nutrition: install dependances",
       "type": "npm",
       "script": "install:all",
       "path": ".",

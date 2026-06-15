@@ -1,196 +1,175 @@
-# Tariki — Smart Traffic Management System
+# Kalil Nutrition — Boutique e-commerce proteines
 
-**Emplacement du projet :** `~/Documents/Tariki` (Finder → Documents → Tariki). Voir aussi [LISEZMOI.md](./LISEZMOI.md).
+Kalil Nutrition est une application web e-commerce inspiree de l affiche fournie : fond noir, jaune et rouge, logo bouclier, produits de musculation, vente en ligne en GNF et shaker gratuit.
 
-Plateforme web de gestion de circulation intelligente pour **Casablanca** (Smart City).
+Le projet contient :
 
-## Stack
+- une vitrine moderne responsive ;
+- un catalogue produits avec filtres et recherche ;
+- un panier local ;
+- un formulaire de commande ;
+- une page admin pour changer les reductions et le shaker offert ;
+- un bouton WhatsApp pour finaliser la commande ;
+- une API Express pour les produits, commandes et inscriptions newsletter ;
+- un deploiement possible en un seul service Render ou en frontend Vercel + API Render.
+
+## Stack technique
 
 | Couche | Technologie |
 |--------|-------------|
 | Frontend | React 18 + Vite + Tailwind CSS |
 | Backend | Node.js + Express |
-| Base de données | PostgreSQL |
-| Temps réel | Socket.io |
-| Cartographie | Mapbox GL (fallback simulé sans token) |
-| Données | Dataset Waze `tariki_cleaned_dataset` (440 trajectoires/jour) |
+| UI | Lucide React |
+| Stockage MVP | Memoire serveur |
+| Deploiement | Render / Vercel |
 
-## Fonctionnalités
+## Demarrage rapide
 
-- **Dashboard admin** : KPIs, carte Casablanca, incidents, graphiques
-- **Dataset par jour** : lundi–dimanche (fichiers Waze nettoyés)
-- **Carte interactive** : routes colorées (vert / jaune / rouge)
-- **Incidents** : CRUD + notifications WebSocket
-- **Interface conducteur** : itinéraires optimisés (presets Casablanca)
-- **Simulation trafic** : mises à jour toutes les 3s (échelle 0–100 %)
-- **Dark mode** + **logs système**
-- **Prédiction IA** : régression linéaire (extension LSTM prévue)
-- **Assistant chatbot** : bouton flottant bas-droite + menu « Assistant IA »
-
-## Démarrage rapide
-
-### Prérequis
+### Prerequis
 
 - Node.js 18+
-- Docker (optionnel, pour PostgreSQL)
+- npm
 
-### 1. Backend
+### Installation
 
 ```bash
-cd backend
-cp .env.example .env
-npm install
-npm run dev
+npm run install:all
+```
+
+### Lancer le backend
+
+```bash
+npm run dev:backend
 ```
 
 API : http://localhost:4000
 
-Le dataset est dans `/datasets` (copié depuis `tariki_cleaned_dataset`).
-
-### 2. Frontend
+### Lancer le frontend
 
 ```bash
-cd frontend
-cp .env.example .env
-npm install
-npm run dev
+npm run dev:frontend
 ```
 
-App : http://localhost:5173
+Application : http://localhost:5173
 
-### Accès public vs administrateur
+## Fonctionnalites
 
-| Rôle | URL | Visible dans l’UI |
-|------|-----|-------------------|
-| **Accueil / menu** | http://localhost:5173/ | Oui |
-| **Conducteur** | http://localhost:5173/driver | Via le menu |
-| **Carte** | http://localhost:5173/carte | Via le menu |
-| **Aide** | http://localhost:5173/aide | Via le menu |
-| **Admin** | URL secrète (voir ci-dessous) | Non — aucun lien depuis le conducteur |
+### Cote client
 
-Le dashboard admin est protégé comme en entreprise :
+- page d accueil marketing ;
+- liste de produits ;
+- filtre par categorie : Gainers, Proteines, Creatine, Packs ;
+- recherche produit ;
+- ajout au panier ;
+- modification des quantites ;
+- calcul du sous-total et total en GNF ;
+- affichage des reductions ;
+- shaker offert selon le seuil configure par admin ;
+- formulaire de commande ;
+- inscription newsletter.
 
-1. **URL non publiée** — définir `VITE_ADMIN_BASE` (ex. `/tariki-ops`) dans `frontend/.env`
-2. **Code d’organisation** — définir `ADMIN_ACCESS_CODE` dans `backend/.env`
-3. **JWT avec rôle `admin`** — vérifié côté API (`/api/auth/me`) et à l’expiration
-4. **Anciennes URLs piège** — `/admin` et `/login` redirigent vers `/driver` si le portail n’est pas `/admin`
+Les clients n ont pas besoin d inscription ni de compte.
 
-**Connexion (équipe — identifiants simples) :**
+Contact boutique : `+224 625 911 265`.
 
-| Rôle | Email | Mot de passe |
-|------|--------|----------------|
-| Administrateur | `kalil@gmail.com` | `0000` |
-| Conducteur | `kpl@gmail.com` | `0000` |
+### Cote admin
 
-- Page unique : http://localhost:5173/connexion  
-- **Code admin** : `0000` → `ADMIN_ACCESS_CODE=0000` dans `backend/.env`  
-- Portail admin (si `VITE_ADMIN_BASE=/tariki-ops`) : http://localhost:5173/tariki-ops/login  
+- URL : http://localhost:5173/admin
+- Code par defaut : `0000`
+- Reglages modifiables :
+  - pourcentage de reduction globale ;
+  - activation/desactivation du shaker offert ;
+  - seuil minimum du shaker offert ;
+  - texte du bandeau promo ;
+  - nom du cadeau.
 
-Après changement de mots de passe : `npm run seed` (met à jour les comptes en base).
+### Cote API
 
-Sans `ADMIN_ACCESS_CODE` : pas de code requis (déconseillé si plusieurs personnes sur le projet).
+| Methode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/health` | Etat de l API |
+| GET | `/api/products` | Liste des produits |
+| GET | `/api/products/:id` | Detail d un produit |
+| GET | `/api/promotions` | Promotions visibles sur la boutique |
+| POST | `/api/orders` | Creation d une commande |
+| GET | `/api/orders` | Liste des commandes en memoire, admin seulement |
+| POST | `/api/newsletter` | Inscription newsletter |
+| GET/PUT | `/api/admin/promotions` | Lecture/modification des promotions, admin seulement |
 
-### Mapbox (optionnel)
+## Variables d environnement
 
+### Backend
+
+```env
+PORT=4000
+CORS_ORIGIN=http://localhost:5173
+ADMIN_ACCESS_CODE=0000
 ```
-VITE_MAPBOX_TOKEN=pk.xxx
+
+### Frontend
+
+```env
+VITE_API_URL=http://localhost:4000
 ```
 
-Sans token : carte de secours avec barres de congestion en direct.
+## Structure
 
-## Architecture
-
-```
-tariki/
-├── datasets/           # JSON/CSV Casablanca (Waze)
+```text
+kalil-nutrition/
 ├── backend/
 │   └── src/
-│       ├── services/tarikiDatasetLoader.js
-│       ├── routes/     # auth, traffic, incidents, dataset, …
-│       └── db/
-└── frontend/
-    └── src/
-        ├── pages/      # dashboard, map, driver, …
-        └── components/
+│       ├── data/catalog.js
+│       ├── routes/shop.js
+│       └── index.js
+├── frontend/
+│   └── src/
+│       ├── App.jsx
+│       ├── main.jsx
+│       └── index.css
+├── scripts/render-build.sh
+├── render.yaml
+└── vercel.json
 ```
 
-## API principales
+## Test rapide de l API
 
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/api/auth/portal-config` | Indique si un code d’accès est requis |
-| POST | `/api/auth/login` | Connexion admin (email, mot de passe, code optionnel) |
-| GET | `/api/auth/me` | Session admin (Bearer JWT) |
-| GET | `/api/traffic/roads` | Segments routiers |
-| GET | `/api/dataset/meta` | Métadonnées dataset |
-| POST | `/api/dataset/apply-day` | Charger un jour (auth) |
-| GET/POST/PATCH/DELETE | `/api/incidents` | CRUD incidents |
-| POST | `/api/routes/optimize` | Itinéraire optimisé |
-
-## Chatbot (Assistant trafic)
-
-**Où le trouver sur le site :**
-
-1. **Bouton bleu flottant** en bas à droite — « Assistant trafic » (toutes les pages)
-2. **Menu admin** (barre latérale) — « Assistant IA (chat) »
-3. **Page Conducteur** — lien « Assistant IA » dans l’en-tête
-
-Sans `OPENAI_API_KEY` : réponses locales basées sur le trafic temps réel.  
-Avec clé OpenAI dans `backend/.env` : réponses GPT enrichies.
-
-```
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-4o-mini
-```
-
-## WebSocket
-
-- `traffic:update` — trafic simulé
-- `incident:new` / `updated` / `deleted`
-- `prediction:update` — prévisions IA
-
-## Phase 3 (extension)
-
-- Service Python LSTM (`backend/python/`)
-- Détection caméra (YOLO / OpenCV)
-- Google Maps Traffic API
-
-## Déploiement gratuit — un lien pour tous (Windows, Mac, mobile)
-
-Guide détaillé : **[DEPLOIEMENT-GRATUIT.md](./DEPLOIEMENT-GRATUIT.md)**
-
-Résumé : **Vercel** (site public HTTPS) + **Render** (API). Les utilisateurs ouvrent un seul lien dans le navigateur — aucune app à installer.
-
-## Déploiement gratuit (GitHub `kalil-cyber/PFA-4eme`)
-
-### 1. Pousser sur GitHub
+1. Lancer le backend :
 
 ```bash
-git remote set-url origin https://github.com/kalil-cyber/PFA-4eme.git
-git push -u origin main
+npm run dev:backend
 ```
 
-Dépôt : [github.com/kalil-cyber/PFA-4eme](https://github.com/kalil-cyber/PFA-4eme)
+2. Dans un autre terminal :
 
-### 2. Backend — [Render](https://render.com) (gratuit)
+```bash
+npm run test:api --prefix backend
+```
 
-1. **New** → **Blueprint** → repo `kalil-cyber/PFA-4eme`
-2. Fichier `render.yaml` à la racine (déjà inclus)
-3. Variable **`CORS_ORIGIN`** = URL Vercel du frontend (ex. `https://tariki.vercel.app`)
-4. URL API : `https://tariki-api.onrender.com`
+## Deploiement
 
-### 3. Frontend — [Vercel](https://vercel.com) (gratuit)
+### Render, app + API ensemble
 
-1. **Import** du repo `kalil-cyber/PFA-4eme`
-2. Framework : **Vite** — racine du projet (fichier `vercel.json` inclus)
-3. Variables d’environnement :
+Le fichier `render.yaml` utilise :
 
-| Variable | Valeur |
-|----------|--------|
-| `VITE_API_URL` | `https://tariki-api.onrender.com` |
-| `VITE_WS_URL` | `https://tariki-api.onrender.com` |
-| `VITE_ADMIN_BASE` | `/tariki-ops` |
+- `scripts/render-build.sh` pour construire le frontend ;
+- `npm start --prefix backend` pour servir l API et les fichiers statiques.
 
-4. Déployer → site public + admin sur `/tariki-ops`
+### Vercel, frontend seul
 
-> Render gratuit : le serveur peut « s’endormir » après ~15 min sans trafic (réveil ~1 min).
+Le fichier `vercel.json` construit `frontend/dist`.
+
+Configurer :
+
+```env
+VITE_API_URL=https://votre-api-render.onrender.com
+```
+
+## Pistes d evolution
+
+- authentification client/admin ;
+- paiement en ligne ;
+- base PostgreSQL ou MongoDB ;
+- tableau de bord administrateur ;
+- gestion du stock ;
+- emails de confirmation ;
+- pages produit detaillees.

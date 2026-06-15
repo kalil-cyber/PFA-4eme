@@ -1,89 +1,38 @@
-# Déployer Tariki GRATUITEMENT — sans carte Visa
+# Deployer Kalil Nutrition sans carte bancaire
 
-**Render** (recommandé pour Tariki) et **Vercel** : plan gratuit **sans carte bancaire**.
+Render et Vercel proposent des plans gratuits utilisables sans carte bancaire dans la plupart des cas.
 
-Évitez Railway, Fly.io, AWS, Google Cloud : ils demandent souvent une carte.
+## Render : app + API sur un seul lien
 
----
-
-## Option 1 — Render (1 lien, app + API) — 5 minutes
-
-### Ce que vous obtenez
+1. Creer un compte Render : https://dashboard.render.com/register
+2. Se connecter avec GitHub.
+3. Creer un Blueprint depuis le depot.
+4. Verifier que le service s appelle `kalil-nutrition`.
+5. Lancer le deploiement.
+6. Tester :
 
 ```text
-https://tariki.onrender.com
+https://votre-url.onrender.com/
+https://votre-url.onrender.com/api/health
 ```
 
-(ou un nom proche, selon Render)
+## Vercel : frontend seul
 
-Fonctionne sur **Windows, Mac, iPhone, Android** (navigateur).
+1. Creer un compte : https://vercel.com/signup
+2. Importer le depot GitHub.
+3. Configurer :
 
-### Étapes
+```env
+VITE_API_URL=https://votre-api-render.onrender.com
+```
 
-1. Ouvrir ce lien (compte gratuit Render, **pas de paiement**) :  
-   **https://dashboard.render.com/register**
+## Plateformes a eviter si vous ne voulez pas ajouter de carte
 
-2. S’inscrire avec **GitHub** (bouton GitHub — pas de carte).
-
-3. Ensuite ouvrir le déploiement automatique du projet :  
-   **https://dashboard.render.com/blueprint/new?repo=https://github.com/kalil-cyber/PFA-4eme**
-
-4. Cliquer **Apply** (ou **Approve**).
-
-5. Attendre 5–15 min (barre de build verte).
-
-6. Dans Render → service **tariki** → copier l’URL en haut (ex. `https://tariki-xxxx.onrender.com`).
-
-7. Tester :
-   - `https://VOTRE-URL.onrender.com/`
-   - `https://VOTRE-URL.onrender.com/connexion`
-   - Compte : `kalil@gmail.com` / `0000`
-
-### Si Render demande un plan
-
-Choisir **Hobby** / **Free** — **ne pas** ajouter de carte.
-
-### Première visite lente
-
-Plan gratuit : le serveur dort après 15 min. La **1re** ouverture peut prendre ~1 minute. C’est normal.
-
----
-
-## Option 2 — Vercel (site seul) + Render (API)
-
-Sans carte sur les deux.
-
-1. **Render** : blueprint ci-dessus (API).  
-2. **Vercel** : https://vercel.com/signup → GitHub → importer `PFA-4eme`.  
-3. Variables Vercel :
-   - `VITE_API_URL` = URL Render (ex. `https://tariki-xxxx.onrender.com`)
-   - `VITE_WS_URL` = même URL
-   - `VITE_ADMIN_BASE` = `/tariki-ops`
-
-Lien public = URL Vercel.
-
----
-
-## Plateformes à éviter (carte souvent obligatoire)
-
-| Plateforme | Carte ? |
-|------------|---------|
-| Railway | Souvent oui |
+| Plateforme | Carte souvent demandee |
+|------------|------------------------|
+| Railway | Oui |
 | Fly.io | Oui |
-| Heroku | Souvent oui |
-| AWS / Azure | Oui |
-| **Render (gratuit)** | **Non** |
-| **Vercel Hobby** | **Non** |
-
----
-
-## Code déjà sur GitHub
-
-Dépôt prêt : https://github.com/kalil-cyber/PFA-4eme  
-Fichier de config : `render.yaml` (build automatique).
-
----
-
-## Aide
-
-Si le build Render échoue : Render → **Logs** → copier l’erreur et demander de l’aide.
+| Heroku | Oui |
+| AWS / Azure / Google Cloud | Oui |
+| Render | Non sur plan gratuit |
+| Vercel Hobby | Non sur plan gratuit |

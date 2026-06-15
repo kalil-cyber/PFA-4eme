@@ -1,8 +1,8 @@
-# Déploiement gratuit — UN seul lien (app + API)
+# Deploiement gratuit — un seul lien (app + API)
 # https://dashboard.render.com/blueprint/new → repo kalil-cyber/PFA-4eme
 services:
   - type: web
-    name: tariki
+    name: kalil-nutrition
     runtime: node
     plan: free
     buildCommand: bash scripts/render-build.sh
@@ -13,15 +13,7 @@ services:
         value: production
       - key: SERVE_FRONTEND
         value: "true"
-      - key: USE_MEMORY
-        value: "true"
-      - key: TARIKI_DEFAULT_DAY
-        value: monday
       - key: ADMIN_ACCESS_CODE
         value: "0000"
-      - key: JWT_SECRET
-        generateValue: true
       - key: CORS_ALLOW_VERCEL
         value: "true"
-      - key: SIMULATION_INTERVAL_MS
-        value: "3000"

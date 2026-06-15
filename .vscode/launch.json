@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Tariki: debug backend",
+      "name": "Kalil Nutrition: debug backend",
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/backend",
