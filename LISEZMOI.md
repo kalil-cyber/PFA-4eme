@@ -1,35 +1,24 @@
-# Tariki — où trouver le projet
+# Kalil Protein — ouvrir le projet
 
-**Dossier du code :**
-
-```
-/Users/mac/Documents/Tariki
-```
-
-Dans le Finder : **Documents** → dossier **Tariki**.
-
-## Ouvrir dans VS Code
-
-1. VS Code → **Fichier** → **Ouvrir un dossier…**
-2. Choisir `Documents/Tariki`
-
-## Lancer l’application
+## Lancer l application
 
 ```bash
-cd ~/Documents/Tariki
 npm run install:all
 npm run dev:backend
 npm run dev:frontend
 ```
 
-- Site : http://localhost:5173/connexion  
-- API : http://localhost:4000/api/health  
+- Site : http://localhost:5173
+- API : http://localhost:4000/api/health
 
-## GitHub
+## Projet
 
-```bash
-gh auth login
-git push -u origin main
-```
+Kalil Protein est une boutique e-commerce pour vendre :
 
-Dépôt : https://github.com/kalil-cyber/PFA-4eme
+- whey protein ;
+- isolate ;
+- creatine ;
+- BCAA ;
+- accessoires fitness.
+
+Le frontend est dans `frontend/` et l API est dans `backend/`.

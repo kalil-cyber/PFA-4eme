@@ -3,147 +3,16 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
-  }
-}
-
-/* Lisibilité en plein soleil (forte luminosité ambiante) */
-@layer utilities {
-  .text-shadow-daylight {
-    text-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.95),
-      0 2px 12px rgba(0, 0, 0, 0.65),
-      0 0 1px rgba(0, 0, 0, 1);
+    @apply bg-[#f7f3ea] text-slate-950 antialiased;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
-  .panel-daylight {
-    @apply border border-white/25 bg-slate-950/70 backdrop-blur-md shadow-2xl;
+  ::selection {
+    @apply bg-emerald-300 text-slate-950;
   }
-
-  .surface-daylight {
-    @apply bg-white border border-slate-300 shadow-lg dark:bg-slate-900 dark:border-slate-600;
-  }
-}
-
-.mapboxgl-popup-content {
-  @apply rounded-lg shadow-lg text-sm;
-}
-
-.traffic-line-fluid {
-  stroke: #22c55e;
-}
-.traffic-line-moderate {
-  stroke: #eab308;
-}
-.traffic-line-congested {
-  stroke: #ef4444;
-}
-
-
-.tariki-robot-badge {
-  @apply flex items-center justify-center rounded-full bg-white shadow-lg ring-2 ring-slate-200/90;
-}
-
-.dark .tariki-robot-badge {
-  @apply bg-slate-100 ring-slate-300/80;
-}
-
-.tariki-robot-idle .tariki-robot-body {
-  animation: robot-float 2.8s ease-in-out infinite;
-  transform-origin: center bottom;
-}
-.tariki-robot-idle .tariki-robot-eye-left,
-.tariki-robot-idle .tariki-robot-eye-right {
-  animation: robot-blink 3.5s ease-in-out infinite;
-  transform-origin: center;
-}
-
-.tariki-robot-thinking .tariki-robot-body {
-  animation: robot-float 1.4s ease-in-out infinite;
-}
-.tariki-robot-thinking .tariki-robot-arm-right {
-  animation: robot-wave 0.6s ease-in-out infinite;
-  transform-origin: 46px 44px;
-}
-.tariki-robot-thinking .tariki-robot-antenna-tip {
-  animation: robot-antenna 0.8s ease-in-out infinite;
-}
-
-.tariki-robot-speaking .tariki-robot-body {
-  animation: robot-float 1.8s ease-in-out infinite;
-}
-.tariki-robot-speaking .tariki-robot-mouth {
-  animation: robot-blink 0.35s ease-in-out infinite;
-  transform-origin: 32px 34px;
-}
-.tariki-robot-speaking .tariki-robot-arm-left {
-  animation: robot-wave 0.5s ease-in-out infinite;
-  transform-origin: 18px 44px;
-}
-
-.tariki-robot-moving {
-  animation: robot-wander 3.5s ease-in-out infinite;
-}
-.tariki-robot-moving .tariki-robot-body {
-  animation: robot-float 1.2s ease-in-out infinite;
-}
-.tariki-robot-moving .tariki-robot-leg-left {
-  animation: robot-step-left 0.45s ease-in-out infinite;
-  transform-origin: 26px 56px;
-}
-.tariki-robot-moving .tariki-robot-leg-right {
-  animation: robot-step-right 0.45s ease-in-out infinite;
-  transform-origin: 37px 56px;
-}
-.tariki-robot-moving .tariki-robot-arm-left {
-  animation: robot-wave 0.7s ease-in-out infinite;
-  transform-origin: 18px 44px;
-}
-.tariki-robot-moving .tariki-robot-arm-right {
-  animation: robot-wave 0.7s ease-in-out infinite reverse;
-  transform-origin: 46px 44px;
-}
-
-@keyframes robot-wander {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  20% { transform: translate(6px, -4px) rotate(3deg); }
-  40% { transform: translate(-5px, -6px) rotate(-2deg); }
-  60% { transform: translate(4px, -3px) rotate(2deg); }
-  80% { transform: translate(-4px, -5px) rotate(-1deg); }
-}
-@keyframes robot-step-left {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(18deg); }
-}
-@keyframes robot-step-right {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-18deg); }
-}
-
-@keyframes robot-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-@keyframes robot-blink {
-  0%, 92%, 100% { transform: scaleY(1); }
-  96% { transform: scaleY(0.15); }
-}
-@keyframes robot-wave {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-14deg); }
-  75% { transform: rotate(10deg); }
-}
-@keyframes robot-antenna {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* Logo 3D statique (sans animation) */
-.tariki-logo-3d-wrap {
-  position: relative;
-}
-
-.tariki-logo-3d-svg {
-  display: block;
 }

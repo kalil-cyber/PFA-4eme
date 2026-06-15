@@ -1,5 +1,5 @@
 {
-  "folders": [{ "path": ".", "name": "Tariki" }],
+  "folders": [{ "path": ".", "name": "Kalil Protein" }],
   "settings": {
     "terminal.integrated.cwd": "${workspaceFolder}"
   }
