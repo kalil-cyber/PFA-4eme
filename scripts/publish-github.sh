@@ -21,7 +21,7 @@ fi
 echo "Creation du depot $REPO_OWNER/$REPO_NAME (si absent)..."
 gh repo view "$REPO_OWNER/$REPO_NAME" 2>/dev/null || \
   gh repo create "$REPO_OWNER/$REPO_NAME" --public \
-    --description "Kalil Protein e-commerce fitness (React + Node.js)"
+    --description "Kalil Nutrition e-commerce fitness (React + Node.js)"
 
 git remote remove origin 2>/dev/null || true
 git remote add origin "https://github.com/$REPO_OWNER/$REPO_NAME.git"

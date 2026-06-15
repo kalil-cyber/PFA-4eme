@@ -1,5 +1,5 @@
 /**
- * Test rapide des endpoints critiques Kalil Protein — node src/scripts/smokeTest.js
+ * Test rapide des endpoints critiques Kalil Nutrition — node src/scripts/smokeTest.js
  */
 const BASE = process.env.API_URL || 'http://localhost:4000';
 
@@ -16,7 +16,7 @@ async function req(method, path, body, token) {
 }
 
 async function run() {
-  console.log('Smoke test Kalil Protein API\n');
+  console.log('Smoke test Kalil Nutrition API\n');
 
   const health = await req('GET', '/api/health');
   console.log(health.ok ? 'OK' : 'KO', 'GET /api/health', health.data.service);
@@ -31,10 +31,11 @@ async function run() {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'x-admin-code': '0000' },
     body: JSON.stringify({
-      discountPercent: 15,
+      discountPercent: 0,
       freeShakerEnabled: true,
-      freeShakerThreshold: 500,
-      headline: 'Smoke test promo',
+      freeShakerThreshold: 0,
+      headline: 'Shaker gratuit avec chaque achat',
+      shakerLabel: 'Shaker Kalil Nutrition gratuit',
     }),
   }).then(async (res) => ({ ok: res.ok, status: res.status, data: await res.json().catch(() => ({})) }));
   console.log(adminPromotions.ok ? 'OK' : 'KO', 'PUT /api/admin/promotions');
@@ -46,10 +47,10 @@ async function run() {
     customer: {
       name: 'Client Test',
       phone: '0600000000',
-      city: 'Casablanca',
-      address: 'Maarif',
+      city: 'Conakry',
+      address: 'Conakry',
     },
-    items: [{ productId: 'kp-whey-vanilla', quantity: 1 }],
+    items: [{ productId: 'gold-whey-907', quantity: 1 }],
   });
   console.log(order.ok ? 'OK' : 'KO', 'POST /api/orders', order.data?.order?.reference || '');
 

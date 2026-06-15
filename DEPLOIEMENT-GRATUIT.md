@@ -1,6 +1,6 @@
-# Deploiement gratuit Kalil Protein
+# Deploiement gratuit Kalil Nutrition
 
-Kalil Protein est une application web. Un seul lien HTTPS suffit pour ordinateur, tablette et mobile.
+Kalil Nutrition est une application web. Un seul lien HTTPS suffit pour ordinateur, tablette et mobile.
 
 ## Option recommandee : Render seul
 
@@ -16,7 +16,7 @@ Render peut servir le frontend et l API depuis le meme service.
 Exemple :
 
 ```text
-https://kalil-protein.onrender.com
+https://kalil-nutrition.onrender.com
 ```
 
 ## Option Vercel + Render

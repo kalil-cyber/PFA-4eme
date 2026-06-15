@@ -1,6 +1,6 @@
-# Kalil Protein — Boutique e-commerce fitness
+# Kalil Nutrition — Boutique e-commerce proteines
 
-Kalil Protein est une application web e-commerce pour vendre des proteines, complements sportifs et accessoires fitness.
+Kalil Nutrition est une application web e-commerce inspiree de l affiche fournie : fond noir, jaune et rouge, logo bouclier, produits de musculation, vente en ligne en GNF et shaker gratuit.
 
 Le projet contient :
 
@@ -9,6 +9,7 @@ Le projet contient :
 - un panier local ;
 - un formulaire de commande ;
 - une page admin pour changer les reductions et le shaker offert ;
+- un bouton WhatsApp pour finaliser la commande ;
 - une API Express pour les produits, commandes et inscriptions newsletter ;
 - un deploiement possible en un seul service Render ou en frontend Vercel + API Render.
 
@@ -57,17 +58,19 @@ Application : http://localhost:5173
 
 - page d accueil marketing ;
 - liste de produits ;
-- filtre par categorie : Proteines, Performance, Accessoires ;
+- filtre par categorie : Gainers, Proteines, Creatine, Packs ;
 - recherche produit ;
 - ajout au panier ;
 - modification des quantites ;
-- calcul du sous-total, livraison et total ;
+- calcul du sous-total et total en GNF ;
 - affichage des reductions ;
 - shaker offert selon le seuil configure par admin ;
 - formulaire de commande ;
 - inscription newsletter.
 
 Les clients n ont pas besoin d inscription ni de compte.
+
+Contact boutique : `+224 625 911 265`.
 
 ### Cote admin
 
@@ -112,7 +115,7 @@ VITE_API_URL=http://localhost:4000
 ## Structure
 
 ```text
-kalil-protein/
+kalil-nutrition/
 ├── backend/
 │   └── src/
 │       ├── data/catalog.js

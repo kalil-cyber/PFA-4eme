@@ -1,4 +1,4 @@
-# Deployer Kalil Protein sans carte bancaire
+# Deployer Kalil Nutrition sans carte bancaire
 
 Render et Vercel proposent des plans gratuits utilisables sans carte bancaire dans la plupart des cas.
 
@@ -7,7 +7,7 @@ Render et Vercel proposent des plans gratuits utilisables sans carte bancaire da
 1. Creer un compte Render : https://dashboard.render.com/register
 2. Se connecter avec GitHub.
 3. Creer un Blueprint depuis le depot.
-4. Verifier que le service s appelle `kalil-protein`.
+4. Verifier que le service s appelle `kalil-nutrition`.
 5. Lancer le deploiement.
 6. Tester :
 

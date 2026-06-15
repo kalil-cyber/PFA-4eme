@@ -1,7 +1,7 @@
 {
-  "name": "kalil-protein-backend",
+  "name": "kalil-nutrition-backend",
   "version": "1.0.0",
-  "description": "Kalil Protein e-commerce API",
+  "description": "Kalil Nutrition e-commerce API",
   "main": "src/index.js",
   "type": "module",
   "engines": {

@@ -2,7 +2,7 @@
 # https://dashboard.render.com/blueprint/new → repo kalil-cyber/PFA-4eme
 services:
   - type: web
-    name: kalil-protein
+    name: kalil-nutrition
     runtime: node
     plan: free
     buildCommand: bash scripts/render-build.sh

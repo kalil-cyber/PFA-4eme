@@ -6,11 +6,11 @@ const router = express.Router();
 const orders = [];
 const newsletterSubscribers = [];
 const promotions = {
-  discountPercent: 20,
+  discountPercent: 0,
   freeShakerEnabled: true,
-  freeShakerThreshold: 500,
-  headline: 'Offre lancement: -20% sur la boutique',
-  shakerLabel: 'Shaker Kalil Protein offert',
+  freeShakerThreshold: 0,
+  headline: 'Shaker gratuit avec chaque achat',
+  shakerLabel: 'Shaker Kalil Nutrition gratuit',
   updatedAt: new Date().toISOString(),
 };
 
@@ -54,7 +54,7 @@ function formatProduct(product) {
     basePrice: product.price,
     price: salePrice,
     discountPercent: promotions.discountPercent,
-    currency: 'MAD',
+    currency: 'GNF',
     availability: product.stock > 0 ? 'in_stock' : 'out_of_stock',
   };
 }
@@ -118,6 +118,7 @@ router.get('/products', (req, res) => {
   const category = String(req.query.category || 'Tous');
 
   const products = productCatalog
+    .filter((product) => !product.giftOnly)
     .filter((product) => category === 'Tous' || product.category === category)
     .filter((product) => {
       if (!search) return true;
@@ -175,7 +176,7 @@ router.post('/orders', (req, res) => {
 
     const lines = calculateOrder(items);
     const subtotal = lines.reduce((sum, line) => sum + line.total, 0);
-    const shipping = subtotal >= 500 ? 0 : 35;
+    const shipping = 0;
     const freeShaker = getFreeShaker(subtotal);
     const total = subtotal + shipping;
 
@@ -195,7 +196,7 @@ router.post('/orders', (req, res) => {
       total,
       discountPercent: promotions.discountPercent,
       freeShakerIncluded: Boolean(freeShaker),
-      currency: 'MAD',
+      currency: 'GNF',
       createdAt: new Date().toISOString(),
     };
 
@@ -203,7 +204,7 @@ router.post('/orders', (req, res) => {
 
     return res.status(201).json({
       order,
-      message: 'Commande confirmee. Kalil Protein te contactera pour la livraison.',
+      message: 'Commande confirmee. Kalil Nutrition te contactera pour la livraison.',
     });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ error: error.message });

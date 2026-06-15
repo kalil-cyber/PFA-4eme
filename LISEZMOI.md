@@ -1,4 +1,4 @@
-# Kalil Protein — ouvrir le projet
+# Kalil Nutrition — ouvrir le projet
 
 ## Lancer l application
 
@@ -14,14 +14,16 @@ npm run dev:frontend
 
 ## Projet
 
-Kalil Protein est une boutique e-commerce pour vendre :
+Kalil Nutrition est une boutique e-commerce style affiche noire/jaune/rouge pour vendre :
 
-- whey protein ;
-- isolate ;
-- creatine ;
-- BCAA ;
-- accessoires fitness.
+- Serious Mass ;
+- Gold Standard Whey ;
+- Nitro Tech Whey ;
+- Cell Tech Creatine ;
+- Creatine Orgain ;
+- packs prise de masse et musculation.
 
-Les clients commandent sans inscription. Le code admin par defaut pour changer les reductions est `0000`.
+Les clients commandent sans inscription. Le code admin par defaut pour changer les reductions et le shaker gratuit est `0000`.
+Contact WhatsApp : `+224 625 911 265`.
 
 Le frontend est dans `frontend/` et l API est dans `backend/`.

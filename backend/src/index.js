@@ -36,7 +36,7 @@ app.use(express.json({ limit: '1mb' }));
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'Kalil Protein API',
+    service: 'Kalil Nutrition API',
     domain: 'e-commerce nutrition sportive',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
@@ -66,7 +66,7 @@ const PORT = process.env.PORT || 4000;
 
 const server = app.listen(PORT, () => {
   const base = `http://localhost:${PORT}`;
-  console.log(`\nKalil Protein API — ${base}`);
+  console.log(`\nKalil Nutrition API — ${base}`);
   console.log(`   Sante: ${base}/api/health`);
   console.log(`   Produits: ${base}/api/products`);
   if (SERVE_FRONTEND) console.log(`   Boutique: ${base}/`);

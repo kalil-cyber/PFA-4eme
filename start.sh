@@ -29,7 +29,7 @@ npm run dev --prefix frontend &
 FRONT_PID=$!
 
 echo ""
-echo "Kalil Protein demarre"
+echo "Kalil Nutrition demarre"
 echo "   Boutique : http://localhost:5173"
 echo "   API      : http://localhost:4000/api/health"
 echo "   Produits : http://localhost:4000/api/products"

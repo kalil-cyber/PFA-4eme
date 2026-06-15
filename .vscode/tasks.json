@@ -2,32 +2,32 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Kalil Protein: backend",
+      "label": "Kalil Nutrition: backend",
       "type": "npm",
       "script": "dev:backend",
       "path": ".",
       "problemMatcher": [],
-      "presentation": { "reveal": "always", "panel": "dedicated", "group": "kalil-protein" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "kalil-nutrition" },
       "isBackground": true
     },
     {
-      "label": "Kalil Protein: frontend",
+      "label": "Kalil Nutrition: frontend",
       "type": "npm",
       "script": "dev:frontend",
       "path": ".",
       "problemMatcher": [],
-      "presentation": { "reveal": "always", "panel": "dedicated", "group": "kalil-protein" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "kalil-nutrition" },
       "isBackground": true
     },
     {
-      "label": "Kalil Protein: tout lancer (backend + frontend)",
-      "dependsOn": ["Kalil Protein: backend", "Kalil Protein: frontend"],
+      "label": "Kalil Nutrition: tout lancer (backend + frontend)",
+      "dependsOn": ["Kalil Nutrition: backend", "Kalil Nutrition: frontend"],
       "dependsOrder": "parallel",
       "problemMatcher": [],
       "group": { "kind": "build", "isDefault": true }
     },
     {
-      "label": "Kalil Protein: install dependances",
+      "label": "Kalil Nutrition: install dependances",
       "type": "npm",
       "script": "install:all",
       "path": ".",

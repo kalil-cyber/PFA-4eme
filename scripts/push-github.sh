@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pousse Kalil Protein vers GitHub - lance une fois : gh auth login
+# Pousse Kalil Nutrition vers GitHub - lance une fois : gh auth login
 set -e
 cd "$(dirname "$0")/.."
 
