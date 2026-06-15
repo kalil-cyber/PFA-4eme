@@ -2,32 +2,32 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Tariki: backend",
+      "label": "Kalil Protein: backend",
       "type": "npm",
       "script": "dev:backend",
       "path": ".",
       "problemMatcher": [],
-      "presentation": { "reveal": "always", "panel": "dedicated", "group": "tariki" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "kalil-protein" },
       "isBackground": true
     },
     {
-      "label": "Tariki: frontend",
+      "label": "Kalil Protein: frontend",
       "type": "npm",
       "script": "dev:frontend",
       "path": ".",
       "problemMatcher": [],
-      "presentation": { "reveal": "always", "panel": "dedicated", "group": "tariki" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "kalil-protein" },
       "isBackground": true
     },
     {
-      "label": "Tariki: tout lancer (backend + frontend)",
-      "dependsOn": ["Tariki: backend", "Tariki: frontend"],
+      "label": "Kalil Protein: tout lancer (backend + frontend)",
+      "dependsOn": ["Kalil Protein: backend", "Kalil Protein: frontend"],
       "dependsOrder": "parallel",
       "problemMatcher": [],
       "group": { "kind": "build", "isDefault": true }
     },
     {
-      "label": "Tariki: install dépendances",
+      "label": "Kalil Protein: install dependances",
       "type": "npm",
       "script": "install:all",
       "path": ".",
